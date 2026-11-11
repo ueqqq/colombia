@@ -24,11 +24,11 @@ window.LiveData = (function () {
   const config = window.SITE_CONFIG;
   const subscribers = [];
 
-  const CACHE_KEY = 'colombiadmc:lastGoodRoster';
+  const CACHE_KEY = 'reinodecuba:lastGoodRoster:v3';
 
   let state = {
     data: null,        // current roster object being displayed
-    source: 'pending', // 'live' | 'fallback' | 'cache' | 'pending'
+    source: 'pending', // 'live' | 'fallback' | 'cache' | 'bundled' | 'pending'
     fetchedAt: null,   // Date (browser clock) of the last successful fetch
     serverUpdatedAt: null, // roster.updatedAt from the sync bot, for tooltips
     error: null,       // last error message, shown honestly in the status text
@@ -82,10 +82,30 @@ window.LiveData = (function () {
     ]);
   }
 
-  // A roster is only usable if it actually has towns. Guards against a
-  // half-written or empty live.json replacing good fallback data.
+  // Only accept a fresh map-sync schema. Earlier snapshots were relabelled
+  // during the rebrand and are not proof that their towns belong to Cuba.
   function isUsable(roster) {
-    return !!(roster && Array.isArray(roster.towns) && roster.towns.length > 0);
+    if (!roster || roster.nation !== config.NATION ||
+        roster.schemaVersion !== config.ROSTER_SCHEMA_VERSION ||
+        !Array.isArray(roster.towns) || roster.towns.length === 0) return false;
+    if (roster.townCount !== roster.towns.length) return false;
+
+    let residentCount = 0;
+    return roster.towns.every(function (town) {
+      if (!town || typeof town.name !== 'string' || !town.name.trim() ||
+          !Array.isArray(town.residents) || town.residents.length === 0 ||
+          (town.mayor !== null && typeof town.mayor !== 'string')) return false;
+      const names = new Set();
+      for (const resident of town.residents) {
+        if (!resident || typeof resident.username !== 'string' || !resident.username.trim()) return false;
+        const key = resident.username.trim().toLowerCase();
+        if (names.has(key)) return false;
+        names.add(key);
+      }
+      if (town.mayor && !names.has(town.mayor.trim().toLowerCase())) return false;
+      residentCount += town.residents.length;
+      return true;
+    }) && roster.residentCount === residentCount;
   }
 
   // Sanity-check the bot's updatedAt: only trust it if it parses to a real
@@ -228,18 +248,31 @@ window.LiveData = (function () {
     if (loading) return; // never stack overlapping refreshes
     loading = true;
 
+    if (window.location.protocol === 'file:' && isUsable(window.CUBA_ROSTER_DATA)) {
+      applyRoster(window.CUBA_ROSTER_DATA, 'bundled');
+      loading = false;
+      return;
+    }
+
     if (showLoadingState && !state.data) {
-      // First paint before any network result: show locally cached good
-      // data immediately (if present) so nothing ever looks empty.
-      const cached = loadFromCache();
-      if (cached) {
-        state.data = cached.roster;
-        state.source = 'cache';
-        state.fetchedAt = new Date(cached.fetchedAt) || new Date();
-        state.serverUpdatedAt = parseServerStamp(cached.roster.updatedAt);
-        notify();
+      // A script-bundled snapshot also works when the site is opened as
+      // file://, where browsers prohibit fetch() of neighboring JSON files.
+      const bundled = window.CUBA_ROSTER_DATA;
+      if (isUsable(bundled)) {
+        applyRoster(bundled, 'bundled');
       } else {
-        notify(); // paint skeleton once
+        // First paint before any network result: show locally cached good
+        // data immediately (if present) so nothing ever looks empty.
+        const cached = loadFromCache();
+        if (cached) {
+          state.data = cached.roster;
+          state.source = 'cache';
+          state.fetchedAt = new Date(cached.fetchedAt) || new Date();
+          state.serverUpdatedAt = parseServerStamp(cached.roster.updatedAt);
+          notify();
+        } else {
+          notify(); // paint skeleton once
+        }
       }
     }
 
