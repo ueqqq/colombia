@@ -225,6 +225,32 @@ a { color: inherit; }
   gap: clamp(2.5rem, 5vh, 4rem);
 }
 
+/* ---------- Homepage entrance animation (index page only) ----------------
+   Soft, calm fade-and-rise. The whole hero starts slightly faded and a few
+   pixels lower, then eases into place. The flag / coat of arms card appears
+   first, followed by a light stagger: title, tagline, buttons, live bar,
+   then the stats strip. No bounce, no spin. */
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-home .hero-item {
+  animation: heroRise 0.8s var(--ease-out) both;
+}
+/* Crest (flag + coat of arms) leads the entrance */
+.page-home .hero-item-crest   { animation-delay: 0.05s; }
+/* Then the copy, in a gentle staggered order */
+.page-home .hero-item-kicker  { animation-delay: 0.18s; }
+.page-home .hero-item-title   { animation-delay: 0.28s; }
+.page-home .hero-item-tagline { animation-delay: 0.40s; }
+.page-home .hero-item-actions { animation-delay: 0.52s; }
+.page-home .hero-item-livebar { animation-delay: 0.64s; }
+/* Stats close out the sequence */
+.page-home .hero-item-stats   { animation-delay: 0.78s; }
+@media (prefers-reduced-motion: reduce) {
+  .page-home .hero-item { animation: none; }
+}
+
 /* Atmosphere: two soft gold lights + engraved contour lines */
 .hero-atmos { position: absolute; inset: 0; pointer-events: none; }
 
@@ -370,9 +396,12 @@ a { color: inherit; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.15rem;
   min-width: 84px;
+  text-align: center;
 }
+.stat-label { white-space: nowrap; }
 .stat-value {
   font-family: var(--font-serif);
   font-size: clamp(1.9rem, 3.4vw, 2.6rem);
@@ -431,6 +460,8 @@ a { color: inherit; }
     justify-content: space-between;
   }
   .stat { min-width: 0; }
+  /* On very narrow screens the long labels may wrap — keep them centered. */
+  .stat-label { white-space: normal; text-align: center; }
   .stat-divider { height: 36px; }
 }
 
@@ -900,10 +931,37 @@ a { color: inherit; }
   .gov-pill-crown { max-width: calc(50% - 0.7rem); margin-inline: auto; }
 }
 
-/* Citizen-list "The Crown" section — keep its cards centered too. */
+/* Citizen-list "The Crown" section — same clean ordering/centering as the
+   Cabinet list: two equal sovereign cards, evenly spaced and centered. */
 .leader-grid-crown {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: calc((100% - 1.1rem) / 3 * 2 + 1.1rem); /* ≈ two full-width crown cards */
+  margin-inline: auto;
+}
+@media (max-width: 900px) {
+  .leader-grid-crown { max-width: 100%; }
+}
+@media (max-width: 560px) {
+  .leader-grid-crown { grid-template-columns: 1fr; }
+}
+
+/* Cabinet citizen-list — four equal minister cards, evenly spaced and
+   centered (auto-fit collapses empty tracks so the row stays symmetric). */
+.leader-grid-cabinet {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  justify-content: center;
+  max-width: 430px; /* two cabinet-style cards + the 1.1rem gap */
+  margin-inline: auto;
+}
+@media (max-width: 560px) {
+  .leader-grid-crown { grid-template-columns: 1fr; max-width: 215px; }
+}
+
+/* Cabinet citizen-list — four equal minister cards, evenly spaced and
+   centered (auto-fit collapses empty tracks so the row stays symmetric). */
+.leader-grid-cabinet {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  max-width: 860px;
+  margin-inline: auto;
 }
 
 .gov-pill {
@@ -1357,6 +1415,37 @@ a { color: inherit; }
 .back-to-top.visible { opacity: 1; transform: none; pointer-events: auto; }
 .back-to-top:hover { background: var(--gold); color: #17120a; }
 
+/* ---------- Imperial sound system (site-wide) ----------------------------*/
+#sound-toggle {
+  position: fixed;
+  left: 1.4rem; bottom: 1.4rem;
+  z-index: 45;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--gold-line-strong);
+  background: rgba(14, 16, 21, 0.85);
+  backdrop-filter: blur(6px);
+  color: var(--gold-bright);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.8);
+  transition: all 0.35s var(--ease-out);
+}
+#sound-toggle:hover { background: var(--gold); color: #17120a; }
+#sound-toggle:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+#sound-toggle .snd-icon { display: none; flex-shrink: 0; }
+html:not(.is-muted) #sound-toggle .snd-on { display: block; }
+html.is-muted #sound-toggle .snd-off { display: block; }
+@media (max-width: 560px) {
+  #sound-toggle { left: 1rem; bottom: 1rem; padding: 0.55rem 0.8rem; }
+  #sound-toggle .snd-label { display: none; }
+}
+
 .toast {
   position: fixed;
   left: 50%; bottom: 2rem;
@@ -1427,8 +1516,19 @@ a { color: inherit; }
 /* ============================================================
    V. CABINET TIERS (final pass) — Crown / Cabinet, clean hierarchy
    ============================================================ */
-.cabinet-grid-ministers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Four ministries on one even row: four equal tracks, capped width and
+   centered — no leftover gap columns, no uneven spacing. */
+.cabinet-grid-ministers {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 1120px;
+  margin-inline: auto;
+}
+@media (max-width: 1100px) { .cabinet-grid-ministers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .cabinet-grid-ministers { grid-template-columns: 1fr; } }
+
+/* "Senior" vs regular ministry pills are no longer distinguished — the
+   Senior Cabinet labels are gone, so all four minister cards look alike. */
+.gov-pill-senior { border-color: var(--gold-line); background: linear-gradient(180deg, var(--surface-raised), var(--surface)); }
 
 /* ============================================================
    VI. DIPLOMACY SUBPAGE — China-only relations, premium cards
