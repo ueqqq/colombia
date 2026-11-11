@@ -274,8 +274,11 @@
     if (!profileOverlay) return;
     lastProfileTrigger = document.activeElement;
     const avatar = 'https://mc-heads.net/avatar/' + encodeURIComponent(c.username) + '/128';
-    document.getElementById('pImg').src = avatar;
-    document.getElementById('pImg').alt = c.username;
+    const profileImage = document.getElementById('pImg');
+    profileImage.hidden = false;
+    profileImage.alt = c.username;
+    profileImage.onerror = function () { this.hidden = true; };
+    profileImage.src = avatar;
     document.getElementById('pName').textContent = c.username;
     document.getElementById('pRole').textContent = c.role || 'Citizen';
     document.getElementById('pBio').textContent = c.bio || 'No bio has been added for this citizen yet.';
