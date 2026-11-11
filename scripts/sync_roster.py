@@ -34,8 +34,9 @@ from pathlib import Path
 
 MAP_BASE = "https://map.diplomaticamc.com"
 MAP_WORLD = "minecraft_overworld"
-NATION_FILTER = "Colombia"
+NATION_FILTER = "Cuba"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "roster.json"
+BUNDLE_PATH = Path(__file__).resolve().parent.parent / "js" / "roster-data.js"
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -59,38 +60,78 @@ def load_markers_json(path: Path) -> dict:
 
 
 def parse_town(marker: dict) -> dict:
-    """Turn one towny_claims marker into {name, nation, residents}."""
+    """Turn one towny_claims marker into {name, nation, mayor, residents}."""
     meta = marker.get("meta", {})
+    if not isinstance(meta, dict):
+        return {"name": "", "nation": "", "mayor": None, "residents": []}
 
-    name = meta.get("%town%", "").replace("_", " ")
-    nation = meta.get("%nation%", "")
-    mayor = meta.get("%mayor%", "").strip()
+    name = str(meta.get("%town%", "") or "").replace("_", " ").strip()
+    nation = str(meta.get("%nation%", "") or "").strip()
+    mayor_value = meta.get("%mayor%", "")
+    mayor = str(mayor_value or "").strip() or None
 
-    residents = [r.strip() for r in meta.get("%residents%", "").split(",") if r.strip()]
+    resident_value = meta.get("%residents%", "")
+    residents = []
+    seen = set()
+    for value in str(resident_value or "").split(","):
+        username = value.strip()
+        key = username.casefold()
+        if username and key not in seen:
+            seen.add(key)
+            residents.append(username)
 
-    # The website tags residents[0] as "Mayor of <town>" by position, so the
-    # mayor has to be placed first on purpose — %residents% doesn't
-    # guarantee that order.
     if mayor:
-        residents = [mayor] + [r for r in residents if r != mayor]
+        residents = [username for username in residents
+                     if username.casefold() != mayor.casefold()]
+        residents.insert(0, mayor)
 
     return {
         "name": name,
         "nation": nation,
-        "residents": [{"username": r} for r in residents],
+        "mayor": mayor,
+        "residents": [{"username": username} for username in residents],
     }
 
 
 def find_nation_towns(markers_data: dict, nation: str) -> list[dict]:
     """Filter and sort every town belonging to `nation`."""
+    if not isinstance(markers_data, dict):
+        raise RuntimeError("markers.json root must be an object.")
     layers = markers_data.get("layers", [])
-    claims_layer = next((layer for layer in layers if layer.get("id") == "towny_claims"), None)
+    if not isinstance(layers, list):
+        raise RuntimeError('markers.json "layers" must be a list.')
+    claims_layer = next((
+        layer for layer in layers
+        if isinstance(layer, dict) and layer.get("id") == "towny_claims"
+    ), None)
     if claims_layer is None:
         raise RuntimeError('No "towny_claims" layer in markers.json — has the map plugin changed?')
 
-    towns = [parse_town(marker) for marker in claims_layer.get("markers", [])]
-    towns = [t for t in towns if t["name"] and t["residents"] and t["nation"] == nation]
-    towns.sort(key=lambda t: t["name"])
+    markers = claims_layer.get("markers", [])
+    if not isinstance(markers, list):
+        raise RuntimeError('"towny_claims" markers are not a list.')
+
+    towns_by_name = {}
+    for marker in markers:
+        if not isinstance(marker, dict):
+            continue
+        town = parse_town(marker)
+        if not town["name"] or town["nation"] != nation or not town["residents"]:
+            continue
+        key = town["name"].casefold()
+        existing = towns_by_name.get(key)
+        if existing is None:
+            towns_by_name[key] = town
+            continue
+        known_residents = {r["username"].casefold() for r in existing["residents"]}
+        for resident in town["residents"]:
+            if resident["username"].casefold() not in known_residents:
+                existing["residents"].append(resident)
+                known_residents.add(resident["username"].casefold())
+        if not existing["mayor"] and town["mayor"]:
+            existing["mayor"] = town["mayor"]
+
+    towns = sorted(towns_by_name.values(), key=lambda t: t["name"].casefold())
 
     if not towns:
         raise RuntimeError(f'No towns matched nation "{nation}".')
@@ -98,7 +139,10 @@ def find_nation_towns(markers_data: dict, nation: str) -> list[dict]:
 
 
 def build_roster(towns: list[dict], nation: str) -> dict:
-    towns_out = [{"name": t["name"], "residents": t["residents"]} for t in towns]
+    towns_out = [
+        {"name": t["name"], "mayor": t["mayor"], "residents": t["residents"]}
+        for t in towns
+    ]
     # Counts are derived from the exact arrays written to the file, so the
     # headline numbers can never disagree with what the site renders.
     resident_count = sum(len(t["residents"]) for t in towns_out)
@@ -108,7 +152,7 @@ def build_roster(towns: list[dict], nation: str) -> dict:
         "townCount": len(towns_out),
         "residentCount": resident_count,
         "towns": towns_out,
-        "schemaVersion": 2,
+        "schemaVersion": 3,
     }
 
 
@@ -126,8 +170,15 @@ def main() -> None:
     towns = find_nation_towns(markers_data, args.nation)
     roster = build_roster(towns, args.nation)
 
-    args.output.write_text(json.dumps(roster, indent=2) + "\n", encoding="utf-8")
+    roster_json = json.dumps(roster, indent=2)
+    args.output.write_text(roster_json + "\n", encoding="utf-8")
+    BUNDLE_PATH.write_text(
+        "// Generated by scripts/sync_roster.py; do not edit by hand.\n"
+        "window.CUBA_ROSTER_DATA = " + roster_json + ";\n",
+        encoding="utf-8",
+    )
     print(f"Wrote {roster['townCount']} towns ({roster['residentCount']} residents) to {args.output}")
+    print(f"Wrote browser-compatible roster bundle to {BUNDLE_PATH}")
 
 
 if __name__ == "__main__":

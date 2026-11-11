@@ -1,4 +1,4 @@
-name: Sync Colombia roster from map
+name: Sync Cuba roster from map
 
 on:
   schedule:
@@ -15,13 +15,16 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
+      - name: Test Cuba roster parser
+        run: python3 -m unittest discover -s scripts -p "test_*.py"
+
       - name: Run roster sync
         run: python3 scripts/sync_roster.py
 
-      - name: Commit roster.json if it changed
+      - name: Commit generated roster files if they changed
         run: |
-          if git diff --quiet -- roster.json; then
-            echo "No changes to roster.json — skipping commit."
+          if git diff --quiet -- roster.json js/roster-data.js; then
+            echo "No roster changes — skipping commit."
             exit 0
           fi
           git config user.name "roster-sync-bot"
@@ -29,7 +32,7 @@ jobs:
           # Keep the committed fallback snapshot byte-identical to the live
           # file so stats, directory and badge can never disagree.
           cp roster.json data/roster.snapshot.json
-          git add roster.json data/roster.snapshot.json
+          git add roster.json data/roster.snapshot.json js/roster-data.js
           git commit -m "chore: sync roster.json [skip ci]"
           git push
 

@@ -81,7 +81,7 @@
   }
 
   /* ---------- Scrollspy: highlight current section in nav ------------------*/
-  const spyIds = ['capital', 'towns', 'map', 'wiki', 'cabinet', 'citizens'];
+  const spyIds = ['capital', 'towns', 'map', 'wiki', 'citizens'];
   const spySections = spyIds.map(id => document.getElementById(id)).filter(Boolean);
   const spyLinks = $$('#siteNav a').filter(a => (a.getAttribute('href') || '').startsWith('#'));
   function setActiveNavLink(id) {
@@ -144,14 +144,6 @@
       });
     }
   })();
-
-  /* ---------- Cursor spotlight on cards ------------------------------------*/
-  function spotlightMove(e) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty('--sx', (e.clientX - rect.left) + 'px');
-    e.currentTarget.style.setProperty('--sy', (e.clientY - rect.top) + 'px');
-  }
-  $$('.gov-pill').forEach(el => el.addEventListener('mousemove', spotlightMove));
 
   /* ---------- Live server status + Copy IP ---------------------------------*/
   const serverStatusDot = document.getElementById('serverStatusDot');
@@ -225,7 +217,7 @@
   loadDiscordStatus();
 
   /* ---------- Wiki widget (lazy, loads when scrolled near) ------------------*/
-  const WIKI_PAGE_TITLE = config.WIKI_PAGE_TITLE || 'Colombia';
+  const WIKI_PAGE_TITLE = config.WIKI_PAGE_TITLE || 'Cuba';
   const wikiWidgetBody = document.getElementById('wikiWidgetBody');
 
   async function loadWikiWidget() {
@@ -309,77 +301,57 @@
     }
   });
 
-  /* ---------- Leadership lists (static roles, avatars from mc-heads) ---------*/
-  const crownLeaders = [
-    { username: '9_88',         role: 'King of Colombia',             town: 'Maicao',            joined: 'Est. 2026', bio: 'Founder and King of the Colombian Empire.' },
-    { username: 'OliveTree316', role: 'Prime Minister of Colombia',   town: 'Medellin Antioquia', joined: '2026', bio: '' },
-  ];
-  // Kept in sync with the Cabinet section on index.html — tier order matters:
-  // Crown first, Senior Ministry next, then the ministries.
-  const cabinetLeaders = [
-    { username: 'Novum_Vetus', role: 'Min. of Foreign & Internal Affairs', tier: 'senior', town: 'Antillara', joined: '2026', bio: 'Represents the Empire abroad and coordinates town placements and internal borders at home.' },
-    { username: 'Crowlia',     role: 'Min. of Defense',        tier: 'senior', town: 'Barbados',    joined: '2026', bio: 'Commands the imperial army, guards the claims, and keeps the peace with foreign powers.' },
-    { username: 'qulipzz',     role: 'Min. of Justice and Law', tier: 'ministry', town: 'Maicao',   joined: '2026', bio: 'Enforces imperial code and settles disputes across the realm.' },
-    { username: 'pato541',     role: 'Min. of Culture',        tier: 'ministry', town: 'El Salvador', joined: '2026', bio: "Keeps the Empire's story loud: festivals, builds, events, and identity." },
-  ];
-
   function makeAvatarImg(username, size) {
+    const avatar = document.createElement('span');
+    avatar.className = 'resident-avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+    const initials = document.createElement('span');
+    initials.className = 'resident-avatar-initials';
+    initials.textContent = username.slice(0, 2).toUpperCase();
+    avatar.appendChild(initials);
+
     const img = document.createElement('img');
-    img.className = 'img-skeleton';
     img.alt = '';
     img.setAttribute('role', 'presentation');
     img.loading = 'lazy';
     img.decoding = 'async';
     img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(username) + '/' + size;
-    const clear = () => img.classList.remove('img-skeleton');
-    if (img.complete && img.naturalWidth) clear();
-    else { img.addEventListener('load', clear, { once: true }); img.addEventListener('error', clear, { once: true }); }
-    return img;
-  }
-
-  function renderPlayerCards(list, containerId) {
-    const grid = document.getElementById(containerId);
-    if (!grid) return;
-    grid.innerHTML = '';
-    list.forEach((c) => {
-      const el = document.createElement('div');
-      el.className = 'citizen-card';
-      el.setAttribute('tabindex', '0');
-      el.setAttribute('role', 'button');
-      el.setAttribute('aria-label', 'View profile: ' + c.username + ', ' + c.role);
-      el.dataset.town = (c.town || '').toLowerCase();
-      el.appendChild(makeAvatarImg(c.username, 64));
-      const name = document.createElement('div');
-      name.className = 'name';
-      name.textContent = c.username;
-      el.appendChild(name);
-      const role = document.createElement('div');
-      role.className = 'role';
-      role.textContent = c.role;
-      el.appendChild(role);
-      // No tier tags ("Senior Cabinet" / "Cabinet") on the cards anymore.
-      el.addEventListener('click', () => openProfile(c));
-      el.addEventListener('mousemove', spotlightMove);
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfile(c); }
-      });
-      grid.appendChild(el);
-    });
+    img.addEventListener('load', () => avatar.classList.add('has-image'), { once: true });
+    img.addEventListener('error', () => img.remove(), { once: true });
+    avatar.appendChild(img);
+    return avatar;
   }
 
   /* ---------- Towns & residents roster --------------------------------------*/
-  let allResidents = [];
-
   function renderTownsRoster(list) {
     const grid = document.getElementById('townsGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    list.forEach((t) => {
-      const residents = t.residents || [];
-      if (!residents.length) return;
-      const mayor = Object.assign({}, residents[0], { role: 'Mayor of ' + t.name, town: t.name });
-      const others = residents.slice(1);
+    const townFilter = document.getElementById('townFilter');
+    const rosterSort = document.getElementById('rosterSort');
+    const selectedTown = townFilter ? townFilter.value : '';
+    const towns = list.filter(t => t.name && Array.isArray(t.residents) && t.residents.length);
+    if (townFilter) {
+      const options = ['<option value="">All towns</option>'];
+      towns.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.name;
+        option.textContent = t.name;
+        options.push(option.outerHTML);
+      });
+      townFilter.innerHTML = options.join('');
+      townFilter.value = towns.some(t => t.name === selectedTown) ? selectedTown : '';
+    }
 
+    if (rosterSort && rosterSort.value === 'residents') {
+      towns.sort((a, b) => b.residents.length - a.residents.length || a.name.localeCompare(b.name));
+    } else {
+      towns.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    towns.forEach((t) => {
+      const residents = t.residents;
+      if (!residents.length) return;
       const card = document.createElement('div');
       card.className = 'town-roster-card';
       card.dataset.town = t.name.toLowerCase();
@@ -395,47 +367,36 @@
       head.appendChild(count);
       card.appendChild(head);
 
-
-      const mayorRow = document.createElement('div');
-      mayorRow.className = 'town-mayor-row';
-      mayorRow.setAttribute('tabindex', '0');
-      mayorRow.setAttribute('role', 'button');
-      mayorRow.setAttribute('aria-label', 'View profile: ' + mayor.username + ', Mayor of ' + t.name);
-      mayorRow.dataset.name = mayor.username.toLowerCase();
-      mayorRow.appendChild(makeAvatarImg(mayor.username, 64));
-      const mayorInfo = document.createElement('div');
-      mayorInfo.className = 'mayor-info';
-      mayorInfo.innerHTML = '<div class="name"></div><div class="tag">👑 Mayor</div>';
-      mayorInfo.querySelector('.name').textContent = mayor.username;
-      mayorRow.appendChild(mayorInfo);
-      mayorRow.addEventListener('click', () => openProfile(mayor));
-      mayorRow.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfile(mayor); } });
-      card.appendChild(mayorRow);
-
-      if (others.length) {
-        const chips = document.createElement('div');
-        chips.className = 'town-residents-chips';
-        others.forEach((r) => {
-          const person = Object.assign({}, r, { role: 'Citizen of ' + t.name, town: t.name });
-          const chip = document.createElement('span');
-          chip.className = 'resident-chip';
-          chip.setAttribute('tabindex', '0');
-          chip.setAttribute('role', 'button');
-          chip.setAttribute('aria-label', 'View profile: ' + r.username + ', Citizen of ' + t.name);
-          chip.dataset.name = r.username.toLowerCase();
-          chip.appendChild(makeAvatarImg(r.username, 32));
-          chip.appendChild(document.createTextNode(r.username));
-          chip.addEventListener('click', () => openProfile(person));
-          chip.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfile(person); } });
-          chips.appendChild(chip);
-        });
-        card.appendChild(chips);
-      } else {
-        const note = document.createElement('p');
-        note.className = 'town-no-others';
-        note.textContent = 'Sole resident.';
-        card.appendChild(note);
-      }
+      const chips = document.createElement('div');
+      chips.className = 'town-residents-chips';
+      residents.forEach((r) => {
+        if (!r.username) return;
+        const isMayor = typeof t.mayor === 'string' &&
+          t.mayor.toLowerCase() === r.username.toLowerCase();
+        const person = {
+          username: r.username,
+          role: isMayor ? 'Mayor of ' + t.name : 'Resident of ' + t.name,
+          town: t.name,
+          joined: '',
+          bio: '',
+        };
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'resident-chip';
+        chip.setAttribute('aria-label', 'View profile: ' + r.username + ', ' + person.role);
+        chip.dataset.name = r.username.toLowerCase();
+        chip.appendChild(makeAvatarImg(r.username, 32));
+        chip.appendChild(document.createTextNode(r.username));
+        if (isMayor) {
+          const label = document.createElement('span');
+          label.className = 'resident-role';
+          label.textContent = 'Mayor';
+          chip.appendChild(label);
+        }
+        chip.addEventListener('click', () => openProfile(person));
+        chips.appendChild(chip);
+      });
+      card.appendChild(chips);
       grid.appendChild(card);
     });
   }
@@ -445,48 +406,59 @@
   const rosterEmpty = document.getElementById('rosterEmpty');
   const rosterEmptyQuery = document.getElementById('rosterEmptyQuery');
   const rosterClearBtn = document.getElementById('rosterClear');
+  const townFilter = document.getElementById('townFilter');
+  const rosterSort = document.getElementById('rosterSort');
+  const rosterSummary = document.getElementById('rosterSummary');
 
   function filterRoster() {
     if (!citizenSearch) return;
     const q = citizenSearch.value.trim().toLowerCase();
+    const selectedTown = townFilter ? townFilter.value.toLowerCase() : '';
     let anyVisible = false;
-
-    // Leaders: match by name/role/town.
-    $$('#leaderGridCrown .citizen-card, #leaderGridCabinet .citizen-card').forEach(card => {
-      const name = card.querySelector('.name').textContent.toLowerCase();
-      const role = card.querySelector('.role').textContent.toLowerCase();
-      const town = (card.dataset.town || '').toLowerCase();
-      const match = !q || name.includes(q) || role.includes(q) || town.includes(q);
-      card.classList.toggle('hidden', !match);
-      if (match) anyVisible = true;
-    });
+    let visibleTowns = 0;
+    let visibleResidents = 0;
 
     $$('#townsGrid .town-roster-card').forEach(card => {
       const townName = card.dataset.town || '';
-      const mayorRow = card.querySelector('.town-mayor-row');
-      const mayorName = mayorRow ? mayorRow.dataset.name || '' : '';
-      const townOrMayorMatch = !q || townName.includes(q) || mayorName.includes(q);
-
-      let anyChipMatch = false;
+      const townSelected = !selectedTown || townName === selectedTown;
+      const townMatchesSearch = !q || townName.includes(q);
+      let matchedResidents = 0;
       card.querySelectorAll('.resident-chip').forEach(chip => {
-        const chipMatch = !q || townOrMayorMatch || (chip.dataset.name || '').includes(q);
-        chip.classList.toggle('roster-hidden', !chipMatch);
-        if (chipMatch) anyChipMatch = true;
+        const residentMatchesSearch = !q || (chip.dataset.name || '').includes(q);
+        const visible = townSelected && (townMatchesSearch || residentMatchesSearch);
+        chip.classList.toggle('roster-hidden', !visible);
+        if (visible) matchedResidents++;
       });
-
-      const cardMatch = townOrMayorMatch || anyChipMatch;
+      const cardMatch = townSelected && (townMatchesSearch || matchedResidents > 0);
       card.classList.toggle('roster-hidden', !cardMatch);
-      if (mayorRow) mayorRow.style.display = (!q || townOrMayorMatch) ? '' : 'none';
-      if (cardMatch) anyVisible = true;
+      if (cardMatch) {
+        anyVisible = true;
+        visibleTowns++;
+        visibleResidents += matchedResidents;
+      }
     });
 
     if (rosterEmptyQuery) rosterEmptyQuery.textContent = citizenSearch.value.trim();
     if (rosterEmpty) rosterEmpty.classList.toggle('show', !anyVisible);
+    if (rosterSummary) {
+      rosterSummary.textContent = anyVisible
+        ? visibleResidents + ' resident' + (visibleResidents === 1 ? '' : 's') +
+          ' shown across ' + visibleTowns + ' town' + (visibleTowns === 1 ? '' : 's')
+        : '';
+    }
     if (citizenSearch.parentElement) {
       citizenSearch.parentElement.classList.toggle('has-value', q.length > 0);
     }
   }
   if (citizenSearch) citizenSearch.addEventListener('input', filterRoster);
+  if (townFilter) townFilter.addEventListener('change', filterRoster);
+  if (rosterSort) rosterSort.addEventListener('change', function () {
+    const towns = window.LiveData && window.LiveData.getState().data;
+    if (towns) {
+      renderTownsRoster(towns.towns);
+      filterRoster();
+    }
+  });
 
   if (rosterClearBtn) {
     rosterClearBtn.addEventListener('click', () => {
@@ -549,6 +521,10 @@
       rosterLiveBadge.textContent = '● Live · updated ' + fresh;
       rosterLiveBadge.title = 'Fetched live from the roster feed at ' + shortStamp(fetchedAt) +
         (serverAt ? '. Source last synced by the server at ' + shortStamp(serverAt) + '.' : '.');
+    } else if (state.source === 'bundled') {
+      rosterLiveBadge.textContent = '● Packaged roster · updated ' + fresh;
+      rosterLiveBadge.title = 'Showing the verified roster packaged with this site copy. ' +
+        'It refreshes when the site roster is synced and published.';
     } else if (state.source === 'fallback') {
       rosterLiveBadge.textContent = '● Snapshot · updated ' + fresh;
       rosterLiveBadge.title = 'Live feed unavailable — showing the committed snapshot, loaded at ' +
@@ -566,33 +542,36 @@
     }
   }
 
+  const rosterStatus = document.getElementById('rosterStatus');
+
   function renderRoster(state) {
     const roster = state.data;
-    if (!roster) { setRosterBadge(state); return; }
+    if (!roster) {
+      setRosterBadge(state);
+      if (rosterStatus) {
+        rosterStatus.classList.toggle('is-unavailable', Boolean(state.error));
+        rosterStatus.classList.toggle('is-connecting', !state.error);
+        rosterStatus.classList.remove('is-saved');
+        rosterStatus.textContent = state.error
+          ? 'No verified Cuba register is published yet. A site maintainer can import an authorized map export; only towns marked exactly “Cuba” will appear. Unverified residents stay off the site.'
+          : 'Checking the verified Cuba map register…';
+      }
+      return;
+    }
     setRosterBadge(state);
-    allResidents = roster.towns.flatMap(t => (t.residents || []).map(r => Object.assign({}, r, { town: t.name })));
+    if (rosterStatus) {
+      const saved = state.source === 'fallback' || state.source === 'cache' || state.source === 'bundled';
+      rosterStatus.classList.toggle('is-saved', saved);
+      rosterStatus.classList.remove('is-unavailable', 'is-connecting');
+      rosterStatus.textContent = state.source === 'bundled'
+        ? 'Showing the verified roster packaged with this site. It works offline and when opened as a local file.'
+        : saved
+          ? 'Showing a verified saved copy while the live register reconnects.'
+          : 'Verified map register loaded. Residents appear only when their town marker names Cuba.';
+    }
     renderTownsRoster(roster.towns);
     filterRoster();
   }
-
-  renderPlayerCards(crownLeaders, 'leaderGridCrown');
-  renderPlayerCards(cabinetLeaders, 'leaderGridCabinet');
-
-  /* ---------- Cabinet pills: hover spotlight + open profile on click --------*/
-  document.querySelectorAll('.gov-pill[data-jump]').forEach((pill) => {
-    const username = pill.dataset.jump;
-    const person = crownLeaders.concat(cabinetLeaders).find((p) => p.username === username);
-    if (!person) return;
-    pill.classList.add('gov-pill-link');
-    pill.setAttribute('tabindex', '0');
-    pill.setAttribute('role', 'button');
-    pill.setAttribute('aria-label', 'View profile: ' + person.username + ', ' + person.role);
-    pill.addEventListener('mousemove', spotlightMove);
-    pill.addEventListener('click', () => openProfile(person));
-    pill.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfile(person); }
-    });
-  });
 
   if (window.LiveData && typeof window.LiveData.subscribe === 'function') {
     window.LiveData.subscribe(renderRoster);
@@ -651,7 +630,7 @@
 
     function buildMessage(v) {
       return [
-        '**Town Grant Petition — Reino de Colombia**',
+        '**Town Grant Petition — Reino de Cuba**',
         '- **Minecraft:** ' + v.minecraft,
         '- **Discord:** ' + v.discord,
         '- **Proposed town:** ' + v.town,

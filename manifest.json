@@ -1,0 +1,15 @@
+{
+  "name": "Reino de Cuba | DiplomaticaMC",
+  "short_name": "Cuba",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07080b",
+  "theme_color": "#0e1015",
+  "icons": [
+    {
+      "src": "assets/coat-of-arms-cuba.png",
+      "sizes": "250x282",
+      "type": "image/png"
+    }
+  ]
+}

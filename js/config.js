@@ -3,9 +3,9 @@
    Everything the site touches externally lives here, nowhere else.
    ========================================================================== */
 window.SITE_CONFIG = {
-  // Live roster produced by scripts/sync_roster.py (GitHub Actions cron),
-  // served from the site root. Swap to your new endpoint here if it moves.
-  LIVE_DATA_URL: 'https://colombiadmc.site/roster.json',
+  // Live roster produced by scripts/sync_roster.py (GitHub Actions cron).
+  // Same-origin avoids reading the old Colombia roster from the legacy domain.
+  LIVE_DATA_URL: 'roster.json',
 
   // Committed fallback: last known good data. If the live fetch fails or
   // returns nothing usable, the site shows this instead — never zeros,
@@ -42,7 +42,9 @@ window.SITE_CONFIG = {
   FETCH_TIMEOUT_MS: 10 * 1000,
 
   // Nation identity constants used across sections.
-  CAPITAL: 'Maicao',
+  NATION: 'Cuba',
+  ROSTER_SCHEMA_VERSION: 3,
+  CAPITAL: 'Santa Clara',
   KING: '9_88',
 
   DISCORD_INVITE: 'https://discord.gg/YUyHgnpXwj',
