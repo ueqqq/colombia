@@ -160,6 +160,36 @@
       </div>
     </section>
 
+    <section class="explore-section" aria-labelledby="exploreTitle">
+      <div class="container">
+        <div class="explore-heading">
+          <p class="kicker">Choose a starting point</p>
+          <h2 id="exploreTitle">Explore Cuba</h2>
+          <p>Open the live map, search the resident register, or read about town grants.</p>
+        </div>
+        <nav class="explore-grid" aria-label="Explore Cuba">
+          <a class="explore-card" href="#map">
+            <span class="explore-number" aria-hidden="true">01</span>
+            <span class="explore-card-title">Live claim map</span>
+            <span class="explore-card-copy">View current claims on the DiplomaticaMC world map.</span>
+            <span class="explore-card-link">Explore the map <span aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="explore-card" href="#citizens">
+            <span class="explore-number" aria-hidden="true">02</span>
+            <span class="explore-card-title">Resident register</span>
+            <span class="explore-card-copy">Search towns and residents listed by Cuba map markers.</span>
+            <span class="explore-card-link">Find a resident <span aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="explore-card" href="#grants">
+            <span class="explore-number" aria-hidden="true">03</span>
+            <span class="explore-card-title">Town grants</span>
+            <span class="explore-card-copy">Read the programme details and submit a town petition.</span>
+            <span class="explore-card-link">View the programme <span aria-hidden="true">&rarr;</span></span>
+          </a>
+        </nav>
+      </div>
+    </section>
+
     <!-- ============================================================
          2. THE CAPITAL: Santa Clara, split feature panel
          ============================================================ -->
@@ -176,7 +206,7 @@
 
         <div class="capital-split">
           <figure class="capital-media">
-            <img class="capital-flag" src="assets/img/flag-cuba.svg" loading="lazy" decoding="async"
+            <img class="capital-flag" src="assets/flag-cuba.png" loading="lazy" decoding="async"
                  alt="Flag of Cuba">
             <figcaption class="capital-badge">Capital &middot; Santa Clara</figcaption>
           </figure>
@@ -276,12 +306,12 @@
           <div class="map-frame-head">
             <span class="wtag">Live</span>
             <span class="map-frame-title">DiplomaticaMC World Map</span>
-            <span class="map-frame-coords">Overworld &middot; Current claims</span>
+            <span class="map-frame-coords">X <strong>-18152</strong> &middot; Z <strong>-5064</strong></span>
           </div>
           <div class="map-box">
-            <iframe src="https://map.diplomaticamc.com/?worldname=minecraft_overworld&amp;mapname=surface&amp;zoom=1"
+            <iframe id="claimMap" src="https://map.diplomaticamc.com/?worldname=minecraft_overworld&amp;mapname=surface&amp;zoom=2&amp;x=-18152&amp;z=-5064"
                     width="100%" height="600" frameborder="0" loading="lazy" allowfullscreen
-                    title="Interactive map of current Cuba claims"></iframe>
+                    title="Interactive map centered at X minus 18152, Z minus 5064"></iframe>
           </div>
         </div>
       </div>
@@ -499,7 +529,7 @@
     <div class="profile-modal">
       <div class="profile-head">
         <button class="profile-close" id="profileClose" type="button" aria-label="Close profile">&#10005;</button>
-        <img id="pImg" src="" alt="">
+        <img id="pImg" alt="">
         <div class="p-name" id="pName"></div>
         <div class="p-role" id="pRole"></div>
       </div>

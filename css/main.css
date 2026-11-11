@@ -199,7 +199,7 @@ a { color: inherit; }
   height: 26px;
   border-radius: 50%;
   border: 1px solid var(--gold-line-strong);
-  background: #fff url("../assets/img/flag-cuba.png") center / cover no-repeat;
+  background: #fff url("../assets/flag-cuba.png") center / cover no-repeat;
   box-shadow: 0 0 12px var(--gold-glow);
 }
 .brand-name {
@@ -858,7 +858,15 @@ a { color: inherit; }
   font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--text-muted);
 }
-@media (max-width: 640px) { .map-frame-coords { display: none; } }
+.map-frame-coords strong {
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+  .map-frame-head { flex-wrap: wrap; }
+  .map-frame-coords { display: block; width: 100%; margin-left: 0; }
+  .map-frame-coords { font-size: 0.67rem; letter-spacing: 0.04em; }
+}
 .map-box { background: var(--surface); }
 .map-box iframe { display: block; border: 0; min-height: 420px; }
 
@@ -1533,6 +1541,7 @@ html.is-muted #sound-toggle .snd-off { display: block; }
   image-rendering: pixelated;
   border: 1px solid var(--gold-line-strong);
 }
+.profile-head img[hidden] { display: none; }
 .p-name { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 600; }
 .p-role { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-top: 0.2rem; }
 .profile-body { padding: 0 1.8rem 1.8rem; }
@@ -1953,4 +1962,100 @@ html.is-muted #sound-toggle .snd-off { display: block; }
   .hero::after { display: none; }
   .town-roster-card,
   .town-roster-card:hover { transform: none; transition: none; }
+}
+
+.explore-section {
+  position: relative;
+  padding: clamp(3.5rem, 7vh, 5rem) 0;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
+  background:
+    radial-gradient(ellipse at 50% 0, rgba(43, 91, 155, 0.12), transparent 68%),
+    linear-gradient(180deg, #0b0d13, var(--bg));
+  scroll-margin-top: 5rem;
+}
+.explore-heading {
+  margin: 0 auto 1.8rem;
+  text-align: center;
+}
+.explore-heading h2 {
+  margin: 0.35rem 0 0.5rem;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+.explore-heading > p:last-child {
+  color: var(--text-muted);
+}
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.explore-card {
+  position: relative;
+  display: flex;
+  min-height: 205px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.4rem;
+  overflow: hidden;
+  border: 1px solid rgba(240, 193, 75, 0.2);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(ellipse at 100% 0, rgba(43, 91, 155, 0.13), transparent 58%),
+    linear-gradient(150deg, #171a22, #0d0f14 82%);
+  text-decoration: none;
+  transition: transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+.explore-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(240, 193, 75, 0.55);
+  box-shadow: 0 18px 38px -28px rgba(43, 91, 155, 0.8);
+}
+.explore-card:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+.explore-number {
+  margin-bottom: 1rem;
+  color: var(--gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.explore-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.explore-card-copy {
+  margin-top: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.explore-card-link {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--gold-bright);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.explore-card-link span {
+  transition: transform 0.2s var(--ease-out);
+}
+.explore-card:hover .explore-card-link span {
+  transform: translateX(3px);
+}
+
+@media (max-width: 760px) {
+  .explore-grid { grid-template-columns: 1fr; }
+  .explore-card { min-height: 170px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-card,
+  .explore-card:hover,
+  .explore-card-link span { transform: none; transition: none; }
 }
