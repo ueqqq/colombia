@@ -199,7 +199,7 @@ a { color: inherit; }
   height: 26px;
   border-radius: 50%;
   border: 1px solid var(--gold-line-strong);
-  background: #fff url("../assets/img/flag-cuba.svg") center / cover no-repeat;
+  background: #fff url("../assets/img/flag-cuba.png") center / cover no-repeat;
   box-shadow: 0 0 12px var(--gold-glow);
 }
 .brand-name {
