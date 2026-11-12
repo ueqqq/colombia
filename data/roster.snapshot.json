@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-12T11:43:18.416Z",
+  "updatedAt": "2026-11-12T12:40:43.782Z",
   "nation": "Cuba",
-  "townCount": 18,
-  "residentCount": 30,
+  "townCount": 17,
+  "residentCount": 28,
   "towns": [
     {
       "name": "Cabada Vera",
@@ -62,15 +62,6 @@
       ]
     },
     {
-      "name": "Golopigi",
-      "mayor": "ProdigyMster100",
-      "residents": [
-        {
-          "username": "ProdigyMster100"
-        }
-      ]
-    },
-    {
       "name": "Guatape",
       "mayor": "Pokeframe",
       "residents": [
@@ -100,9 +91,6 @@
         },
         {
           "username": "FutureLemon"
-        },
-        {
-          "username": "AudioCrescent83"
         },
         {
           "username": "pato541"
