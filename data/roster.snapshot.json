@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-13T16:14:10.084Z",
+  "updatedAt": "2026-11-13T17:08:12.485Z",
   "nation": "Cuba",
-  "townCount": 17,
-  "residentCount": 28,
+  "townCount": 18,
+  "residentCount": 29,
   "towns": [
     {
       "name": "Cabada Vera",
@@ -124,6 +124,15 @@
       "residents": [
         {
           "username": "BoscGIaa"
+        }
+      ]
+    },
+    {
+      "name": "New Letzebuerg",
+      "mayor": "Rectro2",
+      "residents": [
+        {
+          "username": "Rectro2"
         }
       ]
     },
