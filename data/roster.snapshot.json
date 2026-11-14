@@ -1,9 +1,36 @@
 {
-  "updatedAt": "2026-11-14T18:34:33.875Z",
+  "updatedAt": "2026-11-14T19:22:14.198Z",
   "nation": "Cuba",
-  "townCount": 17,
-  "residentCount": 28,
+  "townCount": 19,
+  "residentCount": 37,
   "towns": [
+    {
+      "name": "Berlavo del Mar",
+      "mayor": "Grabekk",
+      "residents": [
+        {
+          "username": "Grabekk"
+        },
+        {
+          "username": "qc_Paul"
+        },
+        {
+          "username": "Baghie11"
+        },
+        {
+          "username": "Thatchaoswolf"
+        },
+        {
+          "username": "tanek27"
+        },
+        {
+          "username": "xammers"
+        },
+        {
+          "username": "ProNameHereMyBro"
+        }
+      ]
+    },
     {
       "name": "Cabada Vera",
       "mayor": "Fishy_Fosh43",
@@ -178,6 +205,18 @@
       "residents": [
         {
           "username": "DianJ"
+        }
+      ]
+    },
+    {
+      "name": "Viejo Habana",
+      "mayor": "Shiny_Andreos",
+      "residents": [
+        {
+          "username": "Shiny_Andreos"
+        },
+        {
+          "username": "Samtbs108"
         }
       ]
     },
