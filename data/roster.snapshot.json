@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-18T11:42:13.201Z",
+  "updatedAt": "2026-11-18T12:40:11.392Z",
   "nation": "Cuba",
-  "townCount": 19,
-  "residentCount": 37,
+  "townCount": 18,
+  "residentCount": 36,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -217,15 +217,6 @@
         },
         {
           "username": "Samtbs108"
-        }
-      ]
-    },
-    {
-      "name": "Zircon",
-      "mayor": "wewakm2",
-      "residents": [
-        {
-          "username": "wewakm2"
         }
       ]
     }
