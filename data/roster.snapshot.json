@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-21T11:22:58.255Z",
+  "updatedAt": "2026-11-21T12:06:16.363Z",
   "nation": "Cuba",
-  "townCount": 18,
-  "residentCount": 36,
+  "townCount": 19,
+  "residentCount": 37,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -100,6 +100,15 @@
       "residents": [
         {
           "username": "StormChaser234"
+        }
+      ]
+    },
+    {
+      "name": "Havana",
+      "mayor": "Grabekk",
+      "residents": [
+        {
+          "username": "Grabekk"
         }
       ]
     },
