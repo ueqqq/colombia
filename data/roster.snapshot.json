@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-22T18:11:37.924Z",
+  "updatedAt": "2026-11-22T18:58:08.173Z",
   "nation": "Cuba",
   "townCount": 21,
-  "residentCount": 43,
+  "residentCount": 42,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -133,9 +133,6 @@
         },
         {
           "username": "AngryMarrow"
-        },
-        {
-          "username": "TrueNorthh"
         }
       ]
     },
