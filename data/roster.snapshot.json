@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-22T07:29:39.204Z",
+  "updatedAt": "2026-11-22T08:26:17.061Z",
   "nation": "Cuba",
-  "townCount": 19,
-  "residentCount": 38,
+  "townCount": 18,
+  "residentCount": 37,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -151,15 +151,6 @@
         },
         {
           "username": "CookieBroiler"
-        }
-      ]
-    },
-    {
-      "name": "Managua",
-      "mayor": "BoscGIaa",
-      "residents": [
-        {
-          "username": "BoscGIaa"
         }
       ]
     },
