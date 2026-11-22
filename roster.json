@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-22T14:37:00.675Z",
+  "updatedAt": "2026-11-22T15:24:38.711Z",
   "nation": "Cuba",
-  "townCount": 18,
-  "residentCount": 37,
+  "townCount": 20,
+  "residentCount": 40,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -64,6 +64,15 @@
       "residents": [
         {
           "username": "Amismash82"
+        }
+      ]
+    },
+    {
+      "name": "El Estado Yucatan",
+      "mayor": "Airy_hfjONE",
+      "residents": [
+        {
+          "username": "Airy_hfjONE"
         }
       ]
     },
@@ -199,6 +208,18 @@
       "residents": [
         {
           "username": "tigerm354"
+        }
+      ]
+    },
+    {
+      "name": "Tegucigalpa",
+      "mayor": "Zaity1",
+      "residents": [
+        {
+          "username": "Zaity1"
+        },
+        {
+          "username": "Miris128"
         }
       ]
     },
