@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-22T16:08:48.382Z",
+  "updatedAt": "2026-11-22T16:51:45.128Z",
   "nation": "Cuba",
-  "townCount": 20,
+  "townCount": 21,
   "residentCount": 42,
   "towns": [
     {
@@ -55,6 +55,15 @@
         },
         {
           "username": "Xmantatwin"
+        }
+      ]
+    },
+    {
+      "name": "Concordia Villa",
+      "mayor": "Bigbudpluto",
+      "residents": [
+        {
+          "username": "Bigbudpluto"
         }
       ]
     },
@@ -121,9 +130,6 @@
         },
         {
           "username": "AngryMarrow"
-        },
-        {
-          "username": "Bigbudpluto"
         },
         {
           "username": "TrueNorthh"
