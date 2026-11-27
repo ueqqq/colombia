@@ -1,21 +1,18 @@
 {
-  "updatedAt": "2026-11-27T15:29:52.955Z",
+  "updatedAt": "2026-11-27T16:35:59.644Z",
   "nation": "Cuba",
   "townCount": 21,
-  "residentCount": 41,
+  "residentCount": 42,
   "towns": [
     {
       "name": "Berlavo del Mar",
-      "mayor": "qc_Paul",
+      "mayor": "Thatchaoswolf",
       "residents": [
         {
-          "username": "qc_Paul"
+          "username": "Thatchaoswolf"
         },
         {
           "username": "Baghie11"
-        },
-        {
-          "username": "Thatchaoswolf"
         },
         {
           "username": "tanek27"
@@ -57,8 +54,11 @@
     },
     {
       "name": "Concordia Villa",
-      "mayor": "ecoust",
+      "mayor": "qc_Paul",
       "residents": [
+        {
+          "username": "qc_Paul"
+        },
         {
           "username": "ecoust"
         }
@@ -127,6 +127,9 @@
         },
         {
           "username": "AngryMarrow"
+        },
+        {
+          "username": "mavryz"
         }
       ]
     },
