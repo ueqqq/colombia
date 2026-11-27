@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-27T18:20:43.923Z",
+  "updatedAt": "2026-11-27T19:23:38.847Z",
   "nation": "Cuba",
   "townCount": 21,
-  "residentCount": 42,
+  "residentCount": 41,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -246,11 +246,8 @@
     },
     {
       "name": "Viejo Habana",
-      "mayor": "Shiny_Andreos",
+      "mayor": "Samtbs108",
       "residents": [
-        {
-          "username": "Shiny_Andreos"
-        },
         {
           "username": "Samtbs108"
         }
