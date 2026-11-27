@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-27T04:43:18.545Z",
+  "updatedAt": "2026-11-27T05:42:46.524Z",
   "nation": "Cuba",
   "townCount": 21,
-  "residentCount": 42,
+  "residentCount": 41,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -57,11 +57,8 @@
     },
     {
       "name": "Concordia Villa",
-      "mayor": "mavryz",
+      "mayor": "ecoust",
       "residents": [
-        {
-          "username": "mavryz"
-        },
         {
           "username": "ecoust"
         }
