@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-27T20:20:08.619Z",
+  "updatedAt": "2026-11-27T21:17:43.336Z",
   "nation": "Cuba",
-  "townCount": 21,
-  "residentCount": 40,
+  "townCount": 22,
+  "residentCount": 44,
   "towns": [
     {
       "name": "Berlavo del Mar",
@@ -127,6 +127,24 @@
         },
         {
           "username": "AngryMarrow"
+        },
+        {
+          "username": "KeonhoLmao"
+        }
+      ]
+    },
+    {
+      "name": "Jamaica",
+      "mayor": "Shiny_Andreos",
+      "residents": [
+        {
+          "username": "Shiny_Andreos"
+        },
+        {
+          "username": "link112013"
+        },
+        {
+          "username": "GlabOfBlab"
         }
       ]
     },
